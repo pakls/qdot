@@ -434,8 +434,8 @@ class Graph(Shape):
 		if highlight_items is None:
 			highlight_items = ()
 		
-		for shape in self.shapes:
-			shape.draw(painter, rect)
+		#for shape in self.shapes:
+		#	shape.draw(painter, rect)
 		for edge in self.edges:
 			edge.draw(painter, rect, highlight=(edge in highlight_items))
 		for node in self.nodes:
