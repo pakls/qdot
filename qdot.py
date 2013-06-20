@@ -1219,7 +1219,7 @@ class QDotWidget(QGraphicsView):
 	def __init__(self, parent = None):
 		QGraphicsView.__init__(self)
 		self._scene = QGraphicsScene(self)
-		self._scene.setSceneRect(QRectF(0, 0, 100, 100))
+		self._scene.setSceneRect(QRectF(0, 0, 200, 300))
 		self.setScene(self._scene)
 		#self._scene.addText("Hello, world!");
 		
