@@ -124,7 +124,8 @@ class TextShape(Shape):
 
 	def __init__(self, pen, x, y, j, w, t):
 		Shape.__init__(self)
-		print('TextShape pen', pen.fontname)
+		if 0:
+			print('TextShape pen', pen.fontname)
 		self.pen = pen.copy()
 		self.x = x
 		self.y = y
