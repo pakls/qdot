@@ -1304,36 +1304,40 @@ class QDotWindow(QWidget):
 	def __init__(self, parent = None):
 		super(QDotWindow, self).__init__(parent)
 		self.createLayout()
-		self.createConnection()
-	
+
 	def createLayout(self):
 		
-		# Todo: add save, load button
-		self.zInButton  = QPushButton("In")
-		self.zOutButton = QPushButton("Out")
-		self.zFitButton = QPushButton("Fit")
-		self.z100Button = QPushButton("100%")
-		
 		h1 = QHBoxLayout()
-		h1.addWidget(self.zInButton)
-		h1.addWidget(self.zOutButton)
-		h1.addWidget(self.zFitButton)
-		h1.addWidget(self.z100Button)
-		
+
+		#
+		# Todo: add save, load button
+		#
+		if h1 != None:
+			toolbar = QToolBar("ToolBar")
+			if toolbar != None:
+				zoomInAct = QAction(QIcon.fromTheme('zoom-in'), 'Zoom In', self)
+				zoomInAct.triggered.connect(self.onZoomIn)
+				toolbar.addAction(zoomInAct)
+				zoomOutAct = QAction(QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
+				zoomOutAct.triggered.connect(self.onZoomOut)
+				toolbar.addAction(zoomOutAct)
+				zoomFitAct = QAction(QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
+				zoomFitAct.triggered.connect(self.onZoomFit)
+				toolbar.addAction(zoomFitAct)
+				zoom100Act = QAction(QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
+				zoom100Act.triggered.connect(self.onZoom100)
+				toolbar.addAction(zoom100Act)
+			h1.addWidget(toolbar)
+	
 		self.dotwidget = QDotWidget()
 		h2 = QHBoxLayout()
 		h2.addWidget(self.dotwidget)
+
 		layout = QVBoxLayout()
 		layout.addLayout(h1)
 		layout.addLayout(h2)
 		
 		self.setLayout(layout)
-	
-	def createConnection(self):
-		self.zInButton.clicked.connect(self.onZoomIn)
-		self.zOutButton.clicked.connect(self.onZoomOut)
-		self.zFitButton.clicked.connect(self.onZoomFit)
-		self.z100Button.clicked.connect(self.onZoom100)
 	
 	def onZoomIn(self):
 		self.dotwidget.zoom_image(1.0 + 1.0/3)
