@@ -1225,6 +1225,7 @@ class QDotWidget(QGraphicsView):
 		#self._scene.addText("Hello, world!");
 		
 		self.setDragMode(self.ScrollHandDrag)
+		self.setTransformationAnchor(self.AnchorUnderMouse)
 
 		self.x, self.y = 0.0, 0.0
 		#self.zoom_ratio = 1.0
