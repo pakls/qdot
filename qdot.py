@@ -1302,6 +1302,12 @@ class QDotWidget(QGraphicsView):
 		if self.graph:
 			self.graph.draw(painter, rect)
 
+	def wheelEvent(self, event):
+		if event.delta() > 0:
+			self.zoom_image(1.0 + 1.0/3)
+		else:
+			self.zoom_image(3.0/4)
+
 class QDotWindow(QWidget):
 	def __init__(self, parent = None):
 		super(QDotWindow, self).__init__(parent)
