@@ -102,7 +102,7 @@ class Shape:
 	def __init__(self):
 		pass
 
-	def draw(self, painer, rect, highlight=False):
+	def draw(self, scene, painer, rect, highlight=False):
 		"""Draw this shape with the given cairo context"""
 		raise NotImplementedError
 
@@ -133,7 +133,7 @@ class TextShape(Shape):
 		self.w = w
 		self.t = t
 
-	def draw(self, painter, rect, highlight=False):
+	def draw(self, scene, painter, rect, highlight=False):
 		pen = self.select_pen(highlight)
 		#if pen.fontname == 'Times-Roman':
 		#	font = QFont('monospace')
@@ -191,32 +191,29 @@ class EllipseShape(Shape):
 
 	def __init__(self, pen, x0, y0, w, h, filled=False):
 		Shape.__init__(self)
-		self.pen = pen.copy()
-		self.x0 = x0
-		self.y0 = y0
-		self.w = w
-		self.h = h
+
+		self.drawn  = False
+		self.pen    = pen.copy()
 		self.filled = filled
 
-	def draw(self, painter, rect, highlight=False):
-		path = QPainterPath()
-		x = self.x0
-		y = self.y0
-		w = self.w
-		h = self.h
-		rect = QRectF(x - w, y - h, w * 2, h * 2)
-		path.moveTo(x - w, y)
-		path.arcTo(rect, 180, 360)
+		self.item = QGraphicsEllipseItem()
+		self.item.setRect(QRectF(x0 - w, y0 - h, w * 2, h * 2))
+		self.item.setStartAngle(180)
+		self.item.setSpanAngle(360*16)
+
+	def draw(self, scene, painter, rect, highlight=False):
+		if self.drawn == False:
+			scene.addItem(self.item)
+			self.drawn = True
 		
-		pen = self.select_pen(highlight)
-		if self.filled:
-			painter.fillPath(path, QBrush(pen.fillcolor))
+		p = self.select_pen(highlight)
+
+		if (self.filled):
+			self.item.setBrush(QBrush(p.fillcolor))
 		else:
-			p = QPen(pen.color)
-			p.setWidth(pen.linewidth)
-			p.setCosmetic(True)
-			painter.setPen(p)
-			painter.drawPath(path)
+			pen = QPen(p.fillcolor)
+			pen.setWidthF(p.linewidth)
+			self.item.setPen(pen)
 
 class PolygonShape(Shape):
 
@@ -226,7 +223,7 @@ class PolygonShape(Shape):
 		self.points = points
 		self.filled = filled
 
-	def draw(self, painter, rect, highlight=False):
+	def draw(self, scene, painter, rect, highlight=False):
 		path = QPainterPath()
 		x0, y0 = self.points[-1]
 		path.moveTo(x0, y0)
@@ -256,7 +253,7 @@ class LineShape(Shape):
 		self.pen = pen.copy()
 		self.points = points
 
-	def draw(self, painter, rect, highlight=False):
+	def draw(self, scene, painter, rect, highlight=False):
 		x0, y0 = self.points[0]
 		painter.moveTo(x0, y0)
 		for x1, y1 in self.points[1:]:
@@ -276,7 +273,7 @@ class BezierShape(Shape):
 		self.points = points
 		self.filled = filled
 
-	def draw(self, painter, rect, highlight=False):
+	def draw(self, scene, painter, rect, highlight=False):
 		path = QPainterPath()
 		x0, y0 = self.points[0]
 		path.moveTo(x0, y0)
@@ -322,9 +319,9 @@ class CompoundShape(Shape):
 		Shape.__init__(self)
 		self.shapes = shapes
 
-	def draw(self, painter, rect, highlight=False):
+	def draw(self, scene, painter, rect, highlight=False):
 		for shape in self.shapes:
-			shape.draw(painter, rect, highlight=highlight)
+			shape.draw(scene, painter, rect, highlight=highlight)
 
 class Url(object):
 
@@ -430,16 +427,16 @@ class Graph(Shape):
 	def get_size(self):
 		return self.width, self.height
 
-	def draw(self, painter, rect, highlight_items=None):
+	def draw(self, scene, painter, rect, highlight_items=None):
 		if highlight_items is None:
 			highlight_items = ()
 		
 		#for shape in self.shapes:
-		#	shape.draw(painter, rect)
+		#	shape.draw(scene, painter, rect)
 		for edge in self.edges:
-			edge.draw(painter, rect, highlight=(edge in highlight_items))
+			edge.draw(scene, painter, rect, highlight=(edge in highlight_items))
 		for node in self.nodes:
-			node.draw(painter, rect, highlight=(node in highlight_items))
+			node.draw(scene, painter, rect, highlight=(node in highlight_items))
 
 	def get_url(self, x, y):
 		for node in self.nodes:
@@ -458,59 +455,6 @@ class Graph(Shape):
 			if jump is not None:
 				return jump
 		return None
-
-class DragAction(QObject):
-
-    def __init__(self, dot_widget):
-        self.dot_widget = dot_widget
-
-    def on_button_press(self, event):
-        self.startmousex = self.prevmousex = event.x
-        self.startmousey = self.prevmousey = event.y
-        self.start()
-
-    def on_motion_notify(self, event):
-        deltax = self.prevmousex - event.x
-        deltay = self.prevmousey - event.y
-        self.drag(deltax, deltay)
-        self.prevmousex = event.x
-        self.prevmousey = event.y
-
-    def on_button_release(self, event):
-        self.stopmousex = event.x
-        self.stopmousey = event.y
-        self.stop()
-
-    def draw(self, cr):
-        pass
-
-    def start(self):
-        pass
-
-    def drag(self, deltax, deltay):
-        pass
-
-    def stop(self):
-        pass
-
-    def abort(self):
-        pass
-
-
-class NullAction(DragAction):
-
-	def on_motion_notify(self, event):
-		dot_widget = self.dot_widget
-		item = dot_widget.get_url(event.x, event.y)
-		if item is None:
-			item = dot_widget.get_jump(event.x, event.y)
-		if item is not None:
-			dot_widget.window.set_cursor(dot_widget.ScrollHandDrag)
-			dot_widget.set_highlight(item.highlight)
-		else:
-			dot_widget.window.set_cursor(dot_widget.NoDrag)
-			dot_widget.set_highlight(None)
-
 
 class Animation(QObject):
 
@@ -1231,7 +1175,6 @@ class QDotWidget(QGraphicsView):
 		#self.zoom_ratio = 1.0
 		self.zoom_to_fit_on_resize = False
 		self.animation = NoAnimation(self)
-		self.drag_action = NullAction(self)
 		self.presstime = None
 		self.highlight = None
 
@@ -1301,7 +1244,7 @@ class QDotWidget(QGraphicsView):
 	def drawForeground (self, painter, rect):
 		#print(rect.x(), rect.y())
 		if self.graph:
-			self.graph.draw(painter, rect)
+			self.graph.draw(self._scene, painter, rect)
 
 	def wheelEvent(self, event):
 		if event.delta() > 0:
