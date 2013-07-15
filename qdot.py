@@ -71,7 +71,15 @@ class Pen:
 		self.linewidth = 1.5
 		self.fontsize  = 14.0
 		self.fontname  = "Times New Roman"
-		self.dash       = ()
+		self.style     = Qt.SolidLine
+
+	def set_fillcolor(self, tuple):
+		(r, g, b, a)   = tuple
+		self.fillcolor = QColor(r * 255, g * 255, b * 255, a * 255)
+
+	def set_color(self, tuple):
+		(r, g, b, a) = tuple
+		self.color   = QColor(r * 255, g * 255, b * 255, a * 255)
 
 	def copy(self):
 		"""Create a copy of this pen."""
@@ -215,10 +223,8 @@ class PolygonShape(Shape):
 		path.closeSubpath()
 		pen = self.select_pen(highlight)
 		if self.filled:
-			print "polygon fill"
 			painter.fillPath(path, QBrush(pen.fillcolor))
 		else:
-			print "polygon not fill"
 			p = QPen(pen.color)
 			p.setWidth(pen.linewidth)
 			p.setCosmetic(True)
@@ -239,7 +245,7 @@ class LineShape(Shape):
 		for x1, y1 in self.points[1:]:
 			painter.line_to(x1, y1)
 		pen = self.select_pen(highlight)
-		painter.set_dash(pen.dash)
+		painter.set_dash(pen.style)
 		painter.set_line_width(pen.linewidth)
 		painter.set_source_rgba(*pen.color)
 		painter.stroke()
@@ -267,7 +273,7 @@ class BezierShape(Shape):
 			painter.fillPath(path, QBrush(pen.fillcolor))
 		else:
 			p = QPen(pen.color)
-			p.setStyle(Qt.SolidLine)
+			p.setStyle(pen.style)
 			p.setWidth(pen.linewidth * 1.5)
 			p.setCosmetic(True)
 			painter.setPen(p)
@@ -601,7 +607,7 @@ class XDotAttrParser:
 					lw = style.split("(")[1].split(")")[0]
 					lw = float(lw)
 					self.handle_linewidth(lw)
-				elif style in ("solid", "dashed"):
+				elif style in ("solid", "dashed", "dotted"):
 					self.handle_linestyle(style)
 			elif op == "F":
 				size = s.read_float()
@@ -649,18 +655,20 @@ class XDotAttrParser:
 
 	def handle_color(self, color, filled=False):
 		if filled:
-			self.pen.fillcolor = color
+			self.pen.set_fillcolor(color)
 		else:
-			self.pen.color = color
+			self.pen.set_color(color)
 
 	def handle_linewidth(self, linewidth):
 		self.pen.linewidth = linewidth
 
 	def handle_linestyle(self, style):
 		if style == "solid":
-			self.pen.dash = ()
+			self.pen.style = Qt.SolidLine
 		elif style == "dashed":
-			self.pen.dash = (6, )       # 6pt on, 6pt off
+			self.pen.style = Qt.DashLine
+		elif style == "dotted":
+			self.pen.style = Qt.DotLine
 
 	def handle_font(self, size, name):
 		self.pen.fontsize = size
