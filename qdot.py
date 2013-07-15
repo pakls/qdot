@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
 # Copyright 2008 Jose Fonseca
+# Copyright 2013 Atnhony Liu
 #
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -15,13 +16,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# 2013/06 Anthony Liu ported this to PyQt (from gtk)
+# 2013/06 Anthony Liu, ported to PyQt
 
-'''Visualize dot graphs via the xdot format.'''
+'''Visualize dot graphs.'''
 
-__author__ = "Anthony Liu"
+__author__  = "Anthony Liu"
 
-__version__ = "0.4.1a"
+__version__ = "0.0.1"
 
 import os
 import sys
@@ -31,20 +32,8 @@ import colorsys
 import time
 import re
 
-from pprint import pprint
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
-import cairo
-import pango
-import pangocairo
-
-
-# See http://www.graphviz.org/pub/scm/graphviz-cairo/plugin/cairo/gvrender_cairo.c
-
-# For pygtk inspiration and guidance see:
-# - http://mirageiv.berlios.de/
-# - http://comix.sourceforge.net/
 
 EOF = -1
 SKIP = -2
@@ -96,6 +85,7 @@ class Pen:
 		pen.fillcolor = QColor(255, 200, 200, 255)
 		return pen
 
+
 class Shape:
 	"""Abstract base class for all the drawing shapes."""
 
@@ -114,11 +104,8 @@ class Shape:
 		else:
 			return self.pen
 
-class TextShape(Shape):
 
-	#fontmap = pangocairo.CairoFontMap()
-	#fontmap.set_resolution(72)
-	#context = fontmap.create_context()
+class TextShape(Shape):
 
 	LEFT, CENTER, RIGHT = -1, 0, 1
 
@@ -135,9 +122,6 @@ class TextShape(Shape):
 
 	def draw(self, scene, painter, rect, highlight=False):
 		pen = self.select_pen(highlight)
-		#if pen.fontname == 'Times-Roman':
-		#	font = QFont('monospace')
-		#else:
 		font = QFont(pen.fontname)
 		
 		if 0:
@@ -168,12 +152,8 @@ class TextShape(Shape):
 		p.setWidth(pen.linewidth)
 		p.setCosmetic(True)
 		painter.setPen(p)
-		#//painter.drawPath(pp)
 		painter.fillPath(pp, QBrush(pen.fillcolor))
 
-		#c = pen.fillcolor
-		#(r, g, b, a) = c.getRgbF()
-		#print(r, g, b, a)
 		if 0: # DEBUG
 			# show where dot thinks the text should appear
 			painter.set_source_rgba(1, 0, 0, .9)
@@ -186,6 +166,7 @@ class TextShape(Shape):
 			painter.moveTo(x, self.y)
 			painter.line_to(x+self.w, self.y)
 			painter.stroke()
+
 
 class EllipseShape(Shape):
 
@@ -201,6 +182,7 @@ class EllipseShape(Shape):
 		self.item.setStartAngle(180)
 		self.item.setSpanAngle(360*16)
 
+
 	def draw(self, scene, painter, rect, highlight=False):
 		if self.drawn == False:
 			scene.addItem(self.item)
@@ -214,6 +196,7 @@ class EllipseShape(Shape):
 			pen = QPen(p.fillcolor)
 			pen.setWidthF(p.linewidth)
 			self.item.setPen(pen)
+
 
 class PolygonShape(Shape):
 
@@ -232,19 +215,16 @@ class PolygonShape(Shape):
 		path.closeSubpath()
 		pen = self.select_pen(highlight)
 		if self.filled:
+			print "polygon fill"
 			painter.fillPath(path, QBrush(pen.fillcolor))
-			#painter.setPen(QPen(pen.fillcolor)
-			#painter.fill_preserve()
-			#painter.fill()
 		else:
+			print "polygon not fill"
 			p = QPen(pen.color)
-			#p.setStyle(Qt.DashLine)
 			p.setWidth(pen.linewidth)
 			p.setCosmetic(True)
 			painter.setPen(p)
 			painter.drawPath(path)
-			#painter.setWidth(pen.linewidth)
-			#painter.stroke()
+
 
 class LineShape(Shape):
 
@@ -285,9 +265,6 @@ class BezierShape(Shape):
 		pen = self.select_pen(highlight)
 		if self.filled:
 			painter.fillPath(path, QBrush(pen.fillcolor))
-			#painter.setPen(QPen(pen.fillcolor)
-			#painter.fill_preserve()
-			#painter.fill()
 		else:
 			p = QPen(pen.color)
 			p.setStyle(Qt.SolidLine)
@@ -295,22 +272,6 @@ class BezierShape(Shape):
 			p.setCosmetic(True)
 			painter.setPen(p)
 			painter.drawPath(path)
-
-		if 0:
-			if self.filled:
-				painter.fillPath(path, QBrush(pen.fillcolor))
-				#painter.setPen(QPen(pen.fillcolor)
-				#painter.fill_preserve()
-				#painter.fill()
-			else:
-				p = QPen(pen.color)
-				#p.setStyle(Qt.DashLine)
-				p.setWidth(pen.linewidth)
-				p.setCosmetic(True)
-				painter.setPen(p)
-				painter.drawPath(path)
-				#painter.setWidth(pen.linewidth)
-				#painter.stroke()
 
 
 class CompoundShape(Shape):
