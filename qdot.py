@@ -572,20 +572,8 @@ class XDotAttrParser:
 			a = 1.0
 			return r, g, b, a
 		else:
-			return self.lookup_color(c)
-
-	def lookup_color(self, c):
-		try:
-			color = gtk.gdk.color_parse(c)
-		except ValueError:
-			sys.stderr.write("unknown color '%s'\n" % c)
-			return None
-		s = 1.0/65535.0
-		r = color.red*s
-		g = color.green*s
-		b = color.blue*s
-		a = 1.0
-		return r, g, b, a
+			print 'TODO: implement text-based color parsing'
+			return 0, 0, 0, 1.0
 
 	def parse(self):
 		s = self
@@ -1160,22 +1148,18 @@ class QDotWidget(QGraphicsView):
 		)
 		xdotcode, error = p.communicate(dotcode)
 		if p.returncode != 0:
-			dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
-									   message_format=error,
-									   buttons=gtk.BUTTONS_OK)
-			dialog.setWindowTitle('Dot Viewer')
-			dialog.run()
-			dialog.destroy()
+			mbox = QMessageBox()
+			mbox.setWindowTitle('QDot Viewer')
+			mbox.setText('Error: ' + error)
+			mbox.exec_()
 			return False
 		try:
 			self.set_xdotcode(xdotcode)
 		except ParseError, ex:
-			dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
-									   message_format=str(ex),
-									   buttons=gtk.BUTTONS_OK)
-			dialog.setWindowTitle('Dot Viewer')
-			dialog.run()
-			dialog.destroy()
+			mbox = QMessageBox(self)
+			mbox.setWindowTitle('QDot Viewer')
+			mbox.setText('Error: ' + str(ex))
+			mbox.exec_()
 			return False
 		else:
 			self.openfilename = filename
@@ -1211,7 +1195,6 @@ class QDotWidget(QGraphicsView):
 		self.filter = filter
 
 	def drawForeground (self, painter, rect):
-		#print(rect.x(), rect.y())
 		if self.graph:
 			self.graph.draw(self._scene, painter, rect)
 
@@ -1320,7 +1303,6 @@ def main():
 		parser.error('incorrect number of arguments')
 
 	app = QApplication(sys.argv)
-	#debug_trace()
 	win = QDotWindow()
 	win.show()
 
