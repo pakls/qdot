@@ -61,8 +61,7 @@ EDGE = 17
 SUBGRAPH = 18
 
 
-class Pen:
-
+class Pen(object):
     """Store pen attributes."""
     # TODO: rewrite with QPen and QColor
 
@@ -96,8 +95,7 @@ class Pen:
         return pen
 
 
-class Shape:
-
+class Shape(object):
     """Abstract base class for all the drawing shapes."""
 
     def __init__(self):
@@ -460,8 +458,7 @@ class NoAnimation(Animation):
         pass
 
 
-class Token:
-
+class Token(object):
     def __init__(self, type, text, line, col):
         self.type = type
         self.text = text
@@ -481,8 +478,7 @@ class ParseError(Exception):
         return ':'.join([str(part) for part in (self.filename, self.line, self.col, self.msg) if part != None])
 
 
-class Parser:
-
+class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
         self.lookahead = self.lexer.next()
@@ -505,8 +501,7 @@ class Parser:
         return token
 
 
-class XDotAttrParser:
-
+class XDotAttrParser(object):
     """Parser for xdot drawing attributes.
     See also:
     - http://www.graphviz.org/doc/info/output.html#d:xdot
@@ -701,8 +696,7 @@ class XDotAttrParser:
         self.shapes.append(PolygonShape(self.pen, points))
 
 
-class Lexer:
-
+class Lexer(object):
     # should be overriden by derived classes
     scanner = None
     tabsize = 8
@@ -786,8 +780,7 @@ class Lexer:
         self.col += len(text) - pos
 
 
-class Scanner:
-
+class Scanner(object):
     """Stateless scanner."""
 
     # should be overriden by derived classes
