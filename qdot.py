@@ -115,7 +115,6 @@ class Shape(object):
 
 
 class TextShape(Shape):
-
     LEFT, CENTER, RIGHT = -1, 0, 1
 
     def __init__(self, pen, x, y, j, w, t):
@@ -178,7 +177,6 @@ class TextShape(Shape):
 
 
 class EllipseShape(Shape):
-
     def __init__(self, pen, x0, y0, w, h, filled=False):
         Shape.__init__(self)
 
@@ -207,7 +205,6 @@ class EllipseShape(Shape):
 
 
 class PolygonShape(Shape):
-
     def __init__(self, pen, points, filled=False):
         Shape.__init__(self)
         self.pen = pen.copy()
@@ -233,7 +230,6 @@ class PolygonShape(Shape):
 
 
 class LineShape(Shape):
-
     def __init__(self, pen, points):
         Shape.__init__(self)
         self.pen = pen.copy()
@@ -252,7 +248,6 @@ class LineShape(Shape):
 
 
 class BezierShape(Shape):
-
     def __init__(self, pen, points, filled=False):
         Shape.__init__(self)
         self.pen = pen.copy()
@@ -281,7 +276,6 @@ class BezierShape(Shape):
 
 
 class CompoundShape(Shape):
-
     def __init__(self, shapes):
         Shape.__init__(self)
         self.shapes = shapes
@@ -292,7 +286,6 @@ class CompoundShape(Shape):
 
 
 class Url(object):
-
     def __init__(self, item, url, highlight=None):
         self.item = item
         self.url = url
@@ -302,7 +295,6 @@ class Url(object):
 
 
 class Jump(object):
-
     def __init__(self, item, x, y, highlight=None):
         self.item = item
         self.x = x
@@ -313,7 +305,6 @@ class Jump(object):
 
 
 class Element(CompoundShape):
-
     """Base class for graph nodes and edges."""
 
     def __init__(self, shapes):
@@ -327,7 +318,6 @@ class Element(CompoundShape):
 
 
 class Node(Element):
-
     def __init__(self, x, y, w, h, shapes, url):
         Element.__init__(self, shapes)
 
@@ -365,7 +355,6 @@ def square_distance(x1, y1, x2, y2):
 
 
 class Edge(Element):
-
     def __init__(self, src, dst, points, shapes):
         Element.__init__(self, shapes)
         self.src = src
@@ -383,7 +372,6 @@ class Edge(Element):
 
 
 class Graph(Shape):
-
     def __init__(self, width=1, height=1, shapes=(), nodes=(), edges=()):
         Shape.__init__(self)
 
@@ -429,7 +417,6 @@ class Graph(Shape):
 
 
 class Animation(QObject):
-
     step = 0.03  # seconds
 
     def __init__(self, dot_widget):
@@ -450,7 +437,6 @@ class Animation(QObject):
 
 
 class NoAnimation(Animation):
-
     def start(self):
         pass
 
@@ -467,7 +453,6 @@ class Token(object):
 
 
 class ParseError(Exception):
-
     def __init__(self, msg=None, filename=None, line=None, col=None):
         self.msg = msg
         self.filename = filename
@@ -816,7 +801,6 @@ class Scanner(object):
 
 
 class DotScanner(Scanner):
-
     # token regular expression table
     tokens = [
         # whitespace and comments
@@ -870,7 +854,6 @@ class DotScanner(Scanner):
 
 
 class DotLexer(Lexer):
-
     scanner = DotScanner()
 
     def filter(self, type, text):
@@ -898,7 +881,6 @@ class DotLexer(Lexer):
 
 
 class DotParser(Parser):
-
     def __init__(self, lexer):
         Parser.__init__(self, lexer)
         self.graph_attrs = {}
@@ -1020,7 +1002,6 @@ class DotParser(Parser):
 
 
 class XDotParser(DotParser):
-
     def __init__(self, xdotcode):
         lexer = DotLexer(buf=xdotcode)
         DotParser.__init__(self, lexer)
@@ -1126,7 +1107,6 @@ class XDotParser(DotParser):
 
 
 class QDotWidget(QGraphicsView):
-
     """PyQT widget that draws dot graphs."""
     graph = None
 
@@ -1218,7 +1198,6 @@ class QDotWidget(QGraphicsView):
 
 
 class QDotWindow(QWidget):
-
     def __init__(self, parent=None):
         super(QDotWindow, self).__init__(parent)
         self.createLayout()
@@ -1334,6 +1313,7 @@ def main():
             win.open_file(args[0])
 
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
