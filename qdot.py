@@ -1285,8 +1285,22 @@ def debug_trace():
     set_trace()
 
 
+def has_graphviz():
+    try:
+        fnull = open(os.devnull, 'w')
+        subprocess.check_call(["which", "dot"], stdout=fnull, stderr=fnull)
+        fnull.close()
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
 def main():
     import optparse
+
+    if not has_graphviz():
+        print "qdot.py depends on Graphviz. Please install it on your system. More information on Graphviz (http://www.graphviz.org/)"
+        sys.exit(-1)
 
     parser = optparse.OptionParser(
         usage='\n\t%prog [file]',
