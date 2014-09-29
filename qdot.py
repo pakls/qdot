@@ -32,8 +32,8 @@ import colorsys
 import time
 import re
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4 import QtCore
+from PyQt4 import QtGui
 
 EOF = -1
 SKIP = -2
@@ -67,20 +67,20 @@ class Pen(object):
 
     def __init__(self):
         # set default attributes
-        self.color = QColor(0, 0, 0, 255)
-        self.fillcolor = QColor(0, 0, 0, 255)
+        self.color = QtGui.QColor(0, 0, 0, 255)
+        self.fillcolor = QtGui.QColor(0, 0, 0, 255)
         self.linewidth = 1.5
         self.fontsize = 14.0
         self.fontname = "Times New Roman"
-        self.style = Qt.SolidLine
+        self.style = QtCore.Qt.SolidLine
 
     def set_fillcolor(self, tuple):
         (r, g, b, a) = tuple
-        self.fillcolor = QColor(r * 255, g * 255, b * 255, a * 255)
+        self.fillcolor = QtGui.QColor(r * 255, g * 255, b * 255, a * 255)
 
     def set_color(self, tuple):
         (r, g, b, a) = tuple
-        self.color = QColor(r * 255, g * 255, b * 255, a * 255)
+        self.color = QtGui.QColor(r * 255, g * 255, b * 255, a * 255)
 
     def copy(self):
         """Create a copy of this pen."""
@@ -90,8 +90,8 @@ class Pen(object):
 
     def highlighted(self):
         pen = self.copy()
-        pen.color = QColor(255, 0, 0, 255)
-        pen.fillcolor = QColor(255, 200, 200, 255)
+        pen.color = QtGui.QColor(255, 0, 0, 255)
+        pen.fillcolor = QtGui.QColor(255, 200, 200, 255)
         return pen
 
 
@@ -130,21 +130,21 @@ class TextShape(Shape):
 
     def draw(self, scene, painter, rect, highlight=False):
         pen = self.select_pen(highlight)
-        font = QFont(pen.fontname)
+        font = QtGui.QFont(pen.fontname)
 
         if 0:
-            qfd = QFontDatabase()
+            qfd = QtGui.QFontDatabase()
             for x in qfd.families():
                 print(x)
-            font.setStyleHint(QFont.Courier, QFont.PreferAntialias)
+            font.setStyleHint(QtGui.QFont.Courier, QtGui.QFont.PreferAntialias)
 
             # FIXME: always see strange fonts
-            qfi = QFontInfo(font)
+            qfi = QtGui.QFontInfo(font)
 
             print(qfi.family())
             print(qfi.styleHint())
 
-        fm = QFontMetrics(font)
+        fm = QtGui.QFontMetrics(font)
 
         w = fm.width(self.t)
         h = fm.height()
@@ -152,15 +152,15 @@ class TextShape(Shape):
         x = self.x - w / 2
         y = self.y
 
-        pp = QPainterPath()
+        pp = QtGui.QPainterPath()
         pp.moveTo(x, y)
         pp.addText(x, y, font, self.t)
 
-        p = QPen(pen.color)
+        p = QtGui.QPen(pen.color)
         p.setWidth(pen.linewidth)
         p.setCosmetic(True)
         painter.setPen(p)
-        painter.fillPath(pp, QBrush(pen.fillcolor))
+        painter.fillPath(pp, QtGui.QBrush(pen.fillcolor))
 
         if 0:  # DEBUG
             # show where dot thinks the text should appear
@@ -184,8 +184,8 @@ class EllipseShape(Shape):
         self.pen = pen.copy()
         self.filled = filled
 
-        self.item = QGraphicsEllipseItem()
-        self.item.setRect(QRectF(x0 - w, y0 - h, w * 2, h * 2))
+        self.item = QtGui.QGraphicsEllipseItem()
+        self.item.setRect(QtCore.QRectF(x0 - w, y0 - h, w * 2, h * 2))
         self.item.setStartAngle(180)
         self.item.setSpanAngle(360 * 16)
 
@@ -197,9 +197,9 @@ class EllipseShape(Shape):
         p = self.select_pen(highlight)
 
         if (self.filled):
-            self.item.setBrush(QBrush(p.fillcolor))
+            self.item.setBrush(QtGui.QBrush(p.fillcolor))
         else:
-            pen = QPen(p.fillcolor)
+            pen = QtGui.QPen(p.fillcolor)
             pen.setWidthF(p.linewidth)
             self.item.setPen(pen)
 
@@ -212,7 +212,7 @@ class PolygonShape(Shape):
         self.filled = filled
 
     def draw(self, scene, painter, rect, highlight=False):
-        path = QPainterPath()
+        path = QtGui.QPainterPath()
         x0, y0 = self.points[-1]
         path.moveTo(x0, y0)
         for x, y in self.points:
@@ -220,9 +220,9 @@ class PolygonShape(Shape):
         path.closeSubpath()
         pen = self.select_pen(highlight)
         if self.filled:
-            painter.fillPath(path, QBrush(pen.fillcolor))
+            painter.fillPath(path, QtGui.QBrush(pen.fillcolor))
         else:
-            p = QPen(pen.color)
+            p = QtGui.QPen(pen.color)
             p.setWidth(pen.linewidth)
             p.setCosmetic(True)
             painter.setPen(p)
@@ -255,7 +255,7 @@ class BezierShape(Shape):
         self.filled = filled
 
     def draw(self, scene, painter, rect, highlight=False):
-        path = QPainterPath()
+        path = QtGui.QPainterPath()
         x0, y0 = self.points[0]
         path.moveTo(x0, y0)
         for i in xrange(1, len(self.points), 3):
@@ -265,9 +265,9 @@ class BezierShape(Shape):
             path.cubicTo(x1, y1, x2, y2, x3, y3)
         pen = self.select_pen(highlight)
         if self.filled:
-            painter.fillPath(path, QBrush(pen.fillcolor))
+            painter.fillPath(path, QtGui.QBrush(pen.fillcolor))
         else:
-            p = QPen(pen.color)
+            p = QtGui.QPen(pen.color)
             p.setStyle(pen.style)
             p.setWidth(pen.linewidth * 1.5)
             p.setCosmetic(True)
@@ -416,7 +416,7 @@ class Graph(Shape):
         return None
 
 
-class Animation(QObject):
+class Animation(QtCore.QObject):
     step = 0.03  # seconds
 
     def __init__(self, dot_widget):
@@ -645,11 +645,11 @@ class XDotAttrParser(object):
 
     def handle_linestyle(self, style):
         if style == "solid":
-            self.pen.style = Qt.SolidLine
+            self.pen.style = QtCore.Qt.SolidLine
         elif style == "dashed":
-            self.pen.style = Qt.DashLine
+            self.pen.style = QtCore.Qt.DashLine
         elif style == "dotted":
-            self.pen.style = Qt.DotLine
+            self.pen.style = QtCore.Qt.DotLine
 
     def handle_font(self, size, name):
         self.pen.fontsize = size
@@ -1106,14 +1106,14 @@ class XDotParser(DotParser):
         return x, y
 
 
-class QDotWidget(QGraphicsView):
+class QDotWidget(QtGui.QGraphicsView):
     """PyQT widget that draws dot graphs."""
     graph = None
 
     def __init__(self, parent=None):
-        QGraphicsView.__init__(self)
-        self._scene = QGraphicsScene(self)
-        self._scene.setSceneRect(QRectF(0, 0, 200, 300))
+        QtGui.QGraphicsView.__init__(self)
+        self._scene = QtGui.QGraphicsScene(self)
+        self._scene.setSceneRect(QtCore.QRectF(0, 0, 200, 300))
         self.setScene(self._scene)
         #self._scene.addText("Hello, world!");
 
@@ -1140,7 +1140,7 @@ class QDotWidget(QGraphicsView):
         )
         xdotcode, error = p.communicate(dotcode)
         if p.returncode != 0:
-            mbox = QMessageBox()
+            mbox = QtGui.QMessageBox()
             mbox.setWindowTitle('QDot Viewer')
             mbox.setText('Error: ' + error)
             mbox.exec_()
@@ -1148,7 +1148,7 @@ class QDotWidget(QGraphicsView):
         try:
             self.set_xdotcode(xdotcode)
         except ParseError, ex:
-            mbox = QMessageBox(self)
+            mbox = QtGui.QMessageBox(self)
             mbox.setWindowTitle('QDot Viewer')
             mbox.setText('Error: ' + str(ex))
             mbox.exec_()
@@ -1161,8 +1161,8 @@ class QDotWidget(QGraphicsView):
         parser = XDotParser(xdotcode)
         self.graph = parser.parse()
         (w, h) = self.graph.get_size()
-        self._scene = QGraphicsScene(self)
-        self._scene.setSceneRect(QRectF(0, 0, w, h))
+        self._scene = QtGui.QGraphicsScene(self)
+        self._scene.setSceneRect(QtCore.QRectF(0, 0, w, h))
         self.setScene(self._scene)
 
         self.resize(w, h)
@@ -1173,11 +1173,11 @@ class QDotWidget(QGraphicsView):
         self.scale(zoom_ratio, zoom_ratio)
 
     def zoom_to_area(self, x1, y1, x2, y2):
-        self.fitInView(QRectF(x1, y1, x2, y2), Qt.KeepAspectRatio)
+        self.fitInView(QtCore.QRectF(x1, y1, x2, y2), QtCore.Qt.KeepAspectRatio)
 
     def zoom_to_fit(self):
         rectf = self._scene.sceneRect()
-        self.fitInView(rectf, Qt.KeepAspectRatio)
+        self.fitInView(rectf, QtCore.Qt.KeepAspectRatio)
 
     def zoom_cancel(self):
         self.resetTransform()
@@ -1197,44 +1197,44 @@ class QDotWidget(QGraphicsView):
             self.zoom_image(3.0 / 4)
 
 
-class QDotWindow(QWidget):
+class QDotWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         super(QDotWindow, self).__init__(parent)
         self.createLayout()
 
     def createLayout(self):
 
-        h1 = QHBoxLayout()
+        h1 = QtGui.QHBoxLayout()
 
         #
         # Todo: add save, load button
         #
         if h1 != None:
-            toolbar = QToolBar("ToolBar")
+            toolbar = QtGui.QToolBar("ToolBar")
             if toolbar != None:
-                zoomInAct = QAction(
-                    QIcon.fromTheme('zoom-in'), 'Zoom In', self)
+                zoomInAct = QtGui.QAction(
+                    QtGui.QIcon.fromTheme('zoom-in'), 'Zoom In', self)
                 zoomInAct.triggered.connect(self.onZoomIn)
                 toolbar.addAction(zoomInAct)
-                zoomOutAct = QAction(
-                    QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
+                zoomOutAct = QtGui.QAction(
+                    QtGui.QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
                 zoomOutAct.triggered.connect(self.onZoomOut)
                 toolbar.addAction(zoomOutAct)
-                zoomFitAct = QAction(
-                    QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
+                zoomFitAct = QtGui.QAction(
+                    QtGui.QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
                 zoomFitAct.triggered.connect(self.onZoomFit)
                 toolbar.addAction(zoomFitAct)
-                zoom100Act = QAction(
-                    QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
+                zoom100Act = QtGui.QAction(
+                    QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
                 zoom100Act.triggered.connect(self.onZoom100)
                 toolbar.addAction(zoom100Act)
             h1.addWidget(toolbar)
 
         self.dotwidget = QDotWidget()
-        h2 = QHBoxLayout()
+        h2 = QtGui.QHBoxLayout()
         h2.addWidget(self.dotwidget)
 
-        layout = QVBoxLayout()
+        layout = QtGui.QVBoxLayout()
         layout.addLayout(h1)
         layout.addLayout(h2)
 
@@ -1268,7 +1268,7 @@ class QDotWindow(QWidget):
             self.set_dotcode(fp.read(), filename)
             fp.close()
         except IOError, ex:
-            mbox = QMessageBox(self)
+            mbox = QtGui.QMessageBox(self)
             mbox.setText('File not found or can not open: ' + filename)
             mbox.exec_()
             sys.exit()
@@ -1315,7 +1315,7 @@ def main():
     if len(args) > 1:
         parser.error('incorrect number of arguments')
 
-    app = QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     win = QDotWindow()
     win.show()
 
