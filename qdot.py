@@ -1230,9 +1230,9 @@ class QDotWindow(QtGui.QWidget):
                 toolbar.addAction(zoom100Act)
             h1.addWidget(toolbar)
 
-        self.dotwidget = QDotWidget()
+        self._dotwidget = QDotWidget()
         h2 = QtGui.QHBoxLayout()
-        h2.addWidget(self.dotwidget)
+        h2.addWidget(self._dotwidget)
 
         layout = QtGui.QVBoxLayout()
         layout.addLayout(h1)
@@ -1241,26 +1241,26 @@ class QDotWindow(QtGui.QWidget):
         self.setLayout(layout)
 
     def onZoomIn(self):
-        self.dotwidget.zoom_image(1.0 + 1.0 / 3)
+        self._dotwidget.zoom_image(1.0 + 1.0 / 3)
 
     def onZoomOut(self):
-        self.dotwidget.zoom_image(3.0 / 4)
+        self._dotwidget.zoom_image(3.0 / 4)
 
     def onZoomFit(self):
-        self.dotwidget.zoom_to_fit()
+        self._dotwidget.zoom_to_fit()
 
     def onZoom100(self):
-        self.dotwidget.zoom_cancel()
+        self._dotwidget.zoom_cancel()
 
     def set_dotcode(self, dotcode, filename='<stdin>'):
-        if self.dotwidget.set_dotcode(dotcode, filename):
+        if self._dotwidget.set_dotcode(dotcode, filename):
             self.setWindowTitle(os.path.basename(filename) + ' - Dot Viewer')
-            self.dotwidget.zoom_to_fit()
+            self._dotwidget.zoom_to_fit()
 
     def set_xdotcode(self, xdotcode, filename='<stdin>'):
-        if self.dotwidget.set_xdotcode(xdotcode):
+        if self._dotwidget.set_xdotcode(xdotcode):
             self.setWindowTitle(os.path.basename(filename) + ' - Dot Viewer')
-            self.dotwidget.zoom_to_fit()
+            self._dotwidget.zoom_to_fit()
 
     def open_file(self, filename):
         try:
@@ -1274,7 +1274,7 @@ class QDotWindow(QtGui.QWidget):
             sys.exit()
 
     def set_filter(self, filter):
-        self.dotwidget.set_filter(filter)
+        self._dotwidget.set_filter(filter)
 
 
 def debug_trace():
