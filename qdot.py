@@ -1197,11 +1197,14 @@ class QDotWidget(QtGui.QGraphicsView):
             self.zoom_image(3.0 / 4)
 
 
-class QDotWindow(QtGui.QWidget):
+class QDotWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(QDotWindow, self).__init__(parent)
 
         self._dotwidget = QDotWidget()
+
+        self._menubar = QtGui.QMenuBar()
+        self.setMenuBar(self._menubar)
 
         self._create_actions()
         self._create_menus()
@@ -1221,10 +1224,15 @@ class QDotWindow(QtGui.QWidget):
             QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
 
     def _create_menus(self):
-        pass
+        proj_menu = self._menubar.addMenu('Project')
 
     def _create_tool_bars(self):
-        pass
+        proj_toolbar = self.addToolBar('Project')
+        proj_toolbar.addAction(self._zoomInAct)
+        proj_toolbar.addAction(self._zoomOutAct)
+        proj_toolbar.addAction(self._zoom100Act)
+        proj_toolbar.addAction(self._zoomFitAct)
+
 
     def _create_connections(self):
         self._zoomInAct.triggered.connect(self._onZoomIn)
@@ -1233,29 +1241,7 @@ class QDotWindow(QtGui.QWidget):
         self._zoom100Act.triggered.connect(self._onZoom100)
 
     def _setup_ui(self):
-
-        h1 = QtGui.QHBoxLayout()
-
-        #
-        # Todo: add save, load button
-        #
-        if h1 != None:
-            toolbar = QtGui.QToolBar("ToolBar")
-            if toolbar != None:
-                toolbar.addAction(self._zoomInAct)
-                toolbar.addAction(self._zoomOutAct)
-                toolbar.addAction(self._zoomFitAct)
-                toolbar.addAction(self._zoom100Act)
-            h1.addWidget(toolbar)
-
-        h2 = QtGui.QHBoxLayout()
-        h2.addWidget(self._dotwidget)
-
-        layout = QtGui.QVBoxLayout()
-        layout.addLayout(h1)
-        layout.addLayout(h2)
-
-        self.setLayout(layout)
+        self.setCentralWidget(self._dotwidget)
 
     def _onZoomIn(self):
         self._dotwidget.zoom_image(1.0 + 1.0 / 3)
