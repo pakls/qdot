@@ -1215,22 +1215,22 @@ class QDotWindow(QtGui.QWidget):
         if h1 != None:
             toolbar = QtGui.QToolBar("ToolBar")
             if toolbar != None:
-                zoomInAct = QtGui.QAction(
+                self._zoomInAct = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-in'), 'Zoom In', self)
-                zoomInAct.triggered.connect(self._onZoomIn)
-                toolbar.addAction(zoomInAct)
-                zoomOutAct = QtGui.QAction(
+                self._zoomInAct.triggered.connect(self._onZoomIn)
+                toolbar.addAction(self._zoomInAct)
+                self._zoomOutAct = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
-                zoomOutAct.triggered.connect(self._onZoomOut)
-                toolbar.addAction(zoomOutAct)
-                zoomFitAct = QtGui.QAction(
+                self._zoomOutAct.triggered.connect(self._onZoomOut)
+                toolbar.addAction(self._zoomOutAct)
+                self._zoomFitAct = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
-                zoomFitAct.triggered.connect(self._onZoomFit)
-                toolbar.addAction(zoomFitAct)
-                zoom100Act = QtGui.QAction(
+                self._zoomFitAct.triggered.connect(self._onZoomFit)
+                toolbar.addAction(self._zoomFitAct)
+                self._zoom100Act = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
-                zoom100Act.triggered.connect(self._onZoom100)
-                toolbar.addAction(zoom100Act)
+                self._zoom100Act.triggered.connect(self._onZoom100)
+                toolbar.addAction(self._zoom100Act)
             h1.addWidget(toolbar)
 
         h2 = QtGui.QHBoxLayout()
