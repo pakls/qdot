@@ -1200,6 +1200,9 @@ class QDotWidget(QtGui.QGraphicsView):
 class QDotWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         super(QDotWindow, self).__init__(parent)
+
+        self._dotwidget = QDotWidget()
+
         self.createLayout()
 
     def createLayout(self):
@@ -1230,7 +1233,6 @@ class QDotWindow(QtGui.QWidget):
                 toolbar.addAction(zoom100Act)
             h1.addWidget(toolbar)
 
-        self._dotwidget = QDotWidget()
         h2 = QtGui.QHBoxLayout()
         h2.addWidget(self._dotwidget)
 
