@@ -1227,7 +1227,10 @@ class QDotWindow(QtGui.QWidget):
         pass
 
     def _create_connections(self):
-        pass
+        self._zoomInAct.triggered.connect(self._onZoomIn)
+        self._zoomOutAct.triggered.connect(self._onZoomOut)
+        self._zoomFitAct.triggered.connect(self._onZoomFit)
+        self._zoom100Act.triggered.connect(self._onZoom100)
 
     def _setup_ui(self):
 
@@ -1239,13 +1242,9 @@ class QDotWindow(QtGui.QWidget):
         if h1 != None:
             toolbar = QtGui.QToolBar("ToolBar")
             if toolbar != None:
-                self._zoomInAct.triggered.connect(self._onZoomIn)
                 toolbar.addAction(self._zoomInAct)
-                self._zoomOutAct.triggered.connect(self._onZoomOut)
                 toolbar.addAction(self._zoomOutAct)
-                self._zoomFitAct.triggered.connect(self._onZoomFit)
                 toolbar.addAction(self._zoomFitAct)
-                self._zoom100Act.triggered.connect(self._onZoom100)
                 toolbar.addAction(self._zoom100Act)
             h1.addWidget(toolbar)
 
