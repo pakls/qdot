@@ -1226,7 +1226,7 @@ class QDotWindow(QtGui.QWidget):
                 toolbar.addAction(zoomFitAct)
                 zoom100Act = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
-                zoom100Act.triggered.connect(self.onZoom100)
+                zoom100Act.triggered.connect(self._onZoom100)
                 toolbar.addAction(zoom100Act)
             h1.addWidget(toolbar)
 
@@ -1249,7 +1249,7 @@ class QDotWindow(QtGui.QWidget):
     def _onZoomFit(self):
         self._dotwidget.zoom_to_fit()
 
-    def onZoom100(self):
+    def _onZoom100(self):
         self._dotwidget.zoom_cancel()
 
     def set_dotcode(self, dotcode, filename='<stdin>'):
