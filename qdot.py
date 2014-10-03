@@ -1203,7 +1203,24 @@ class QDotWindow(QtGui.QWidget):
 
         self._dotwidget = QDotWidget()
 
+        self._create_actions()
+        self._create_menus()
+        self._create_tool_bars()
+        self._create_connections()
+
         self.createLayout()
+
+    def _create_actions(self):
+        pass
+
+    def _create_menus(self):
+        pass
+
+    def _create_tool_bars(self):
+        pass
+
+    def _create_connections(self):
+        pass
 
     def createLayout(self):
 
