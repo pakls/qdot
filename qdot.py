@@ -1208,7 +1208,7 @@ class QDotWindow(QtGui.QWidget):
         self._create_tool_bars()
         self._create_connections()
 
-        self.createLayout()
+        self._setup_ui()
 
     def _create_actions(self):
         pass
@@ -1222,7 +1222,7 @@ class QDotWindow(QtGui.QWidget):
     def _create_connections(self):
         pass
 
-    def createLayout(self):
+    def _setup_ui(self):
 
         h1 = QtGui.QHBoxLayout()
 
