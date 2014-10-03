@@ -1218,7 +1218,7 @@ class QDotWindow(QtGui.QWidget):
                 toolbar.addAction(zoomInAct)
                 zoomOutAct = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
-                zoomOutAct.triggered.connect(self.onZoomOut)
+                zoomOutAct.triggered.connect(self._onZoomOut)
                 toolbar.addAction(zoomOutAct)
                 zoomFitAct = QtGui.QAction(
                     QtGui.QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
@@ -1243,7 +1243,7 @@ class QDotWindow(QtGui.QWidget):
     def _onZoomIn(self):
         self._dotwidget.zoom_image(1.0 + 1.0 / 3)
 
-    def onZoomOut(self):
+    def _onZoomOut(self):
         self._dotwidget.zoom_image(3.0 / 4)
 
     def onZoomFit(self):
