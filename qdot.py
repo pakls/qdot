@@ -1302,7 +1302,7 @@ def main():
     import optparse
 
     if not has_graphviz():
-        print "qdot.py depends on Graphviz. Please install it on your system. More information on Graphviz (http://www.graphviz.org/)"
+        print 'qdot.py depends on Graphviz. Please install it on your system. More information on Graphviz (http://www.graphviz.org/)'
         sys.exit(-1)
 
     parser = optparse.OptionParser(
