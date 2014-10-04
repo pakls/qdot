@@ -1223,8 +1223,19 @@ class QDotWindow(QtGui.QMainWindow):
         self._zoom100Act = QtGui.QAction(
             QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
 
+        self._openFileAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('document-open'), 'Open', self )
+        self._ExitAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('application-exit'),
+            'Exit',
+            self,
+            statusTip='Exit qdot',
+            triggered=self.close)
+
     def _create_menus(self):
-        proj_menu = self._menubar.addMenu('Project')
+        file_menu = self._menubar.addMenu('File')
+        file_menu.addAction(self._openFileAct)
+        file_menu.addAction(self._ExitAct)
 
     def _create_tool_bars(self):
         proj_toolbar = self.addToolBar('Project')
@@ -1233,12 +1244,21 @@ class QDotWindow(QtGui.QMainWindow):
         proj_toolbar.addAction(self._zoom100Act)
         proj_toolbar.addAction(self._zoomFitAct)
 
-
     def _create_connections(self):
         self._zoomInAct.triggered.connect(self._onZoomIn)
         self._zoomOutAct.triggered.connect(self._onZoomOut)
         self._zoomFitAct.triggered.connect(self._onZoomFit)
         self._zoom100Act.triggered.connect(self._onZoom100)
+
+        self._openFileAct.triggered.connect(self._open_dot_file)
+
+    def _open_dot_file(self):
+        dot_file = QtGui.QFileDialog.getOpenFileName(
+                directory='.',
+                filter=self.tr('xdot files (*.dot);;All files(*)'))
+
+        if dot_file:
+            self.open_file(str(dot_file))
 
     def _setup_ui(self):
         self.setCentralWidget(self._dotwidget)
