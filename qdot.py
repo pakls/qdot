@@ -1197,70 +1197,93 @@ class QDotWidget(QtGui.QGraphicsView):
             self.zoom_image(3.0 / 4)
 
 
-class QDotWindow(QtGui.QWidget):
+class QDotWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(QDotWindow, self).__init__(parent)
-        self.createLayout()
 
-    def createLayout(self):
+        self._dotwidget = QDotWidget()
 
-        h1 = QtGui.QHBoxLayout()
+        self._menubar = QtGui.QMenuBar()
+        self.setMenuBar(self._menubar)
 
-        #
-        # Todo: add save, load button
-        #
-        if h1 != None:
-            toolbar = QtGui.QToolBar("ToolBar")
-            if toolbar != None:
-                zoomInAct = QtGui.QAction(
-                    QtGui.QIcon.fromTheme('zoom-in'), 'Zoom In', self)
-                zoomInAct.triggered.connect(self.onZoomIn)
-                toolbar.addAction(zoomInAct)
-                zoomOutAct = QtGui.QAction(
-                    QtGui.QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
-                zoomOutAct.triggered.connect(self.onZoomOut)
-                toolbar.addAction(zoomOutAct)
-                zoomFitAct = QtGui.QAction(
-                    QtGui.QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
-                zoomFitAct.triggered.connect(self.onZoomFit)
-                toolbar.addAction(zoomFitAct)
-                zoom100Act = QtGui.QAction(
-                    QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
-                zoom100Act.triggered.connect(self.onZoom100)
-                toolbar.addAction(zoom100Act)
-            h1.addWidget(toolbar)
+        self._create_actions()
+        self._create_menus()
+        self._create_tool_bars()
+        self._create_connections()
 
-        self.dotwidget = QDotWidget()
-        h2 = QtGui.QHBoxLayout()
-        h2.addWidget(self.dotwidget)
+        self._setup_ui()
 
-        layout = QtGui.QVBoxLayout()
-        layout.addLayout(h1)
-        layout.addLayout(h2)
+    def _create_actions(self):
+        self._zoomInAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('zoom-in'), 'Zoom In', self)
+        self._zoomOutAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('zoom-out'), 'Zoom Out', self)
+        self._zoomFitAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('zoom-fit-best'), 'Zoom Fit', self)
+        self._zoom100Act = QtGui.QAction(
+            QtGui.QIcon.fromTheme('zoom-original'), 'Zoom 100%', self)
 
-        self.setLayout(layout)
+        self._openFileAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('document-open'), 'Open', self )
+        self._ExitAct = QtGui.QAction(
+            QtGui.QIcon.fromTheme('application-exit'),
+            'Exit',
+            self,
+            statusTip='Exit qdot',
+            triggered=self.close)
 
-    def onZoomIn(self):
-        self.dotwidget.zoom_image(1.0 + 1.0 / 3)
+    def _create_menus(self):
+        file_menu = self._menubar.addMenu('File')
+        file_menu.addAction(self._openFileAct)
+        file_menu.addAction(self._ExitAct)
 
-    def onZoomOut(self):
-        self.dotwidget.zoom_image(3.0 / 4)
+    def _create_tool_bars(self):
+        proj_toolbar = self.addToolBar('Project')
+        proj_toolbar.addAction(self._zoomInAct)
+        proj_toolbar.addAction(self._zoomOutAct)
+        proj_toolbar.addAction(self._zoom100Act)
+        proj_toolbar.addAction(self._zoomFitAct)
 
-    def onZoomFit(self):
-        self.dotwidget.zoom_to_fit()
+    def _create_connections(self):
+        self._zoomInAct.triggered.connect(self._onZoomIn)
+        self._zoomOutAct.triggered.connect(self._onZoomOut)
+        self._zoomFitAct.triggered.connect(self._onZoomFit)
+        self._zoom100Act.triggered.connect(self._onZoom100)
 
-    def onZoom100(self):
-        self.dotwidget.zoom_cancel()
+        self._openFileAct.triggered.connect(self._open_dot_file)
+
+    def _open_dot_file(self):
+        dot_file = QtGui.QFileDialog.getOpenFileName(
+                directory='.',
+                filter=self.tr('xdot files (*.dot);;All files(*)'))
+
+        if dot_file:
+            self.open_file(str(dot_file))
+
+    def _setup_ui(self):
+        self.setCentralWidget(self._dotwidget)
+
+    def _onZoomIn(self):
+        self._dotwidget.zoom_image(1.0 + 1.0 / 3)
+
+    def _onZoomOut(self):
+        self._dotwidget.zoom_image(3.0 / 4)
+
+    def _onZoomFit(self):
+        self._dotwidget.zoom_to_fit()
+
+    def _onZoom100(self):
+        self._dotwidget.zoom_cancel()
 
     def set_dotcode(self, dotcode, filename='<stdin>'):
-        if self.dotwidget.set_dotcode(dotcode, filename):
+        if self._dotwidget.set_dotcode(dotcode, filename):
             self.setWindowTitle(os.path.basename(filename) + ' - Dot Viewer')
-            self.dotwidget.zoom_to_fit()
+            self._dotwidget.zoom_to_fit()
 
     def set_xdotcode(self, xdotcode, filename='<stdin>'):
-        if self.dotwidget.set_xdotcode(xdotcode):
+        if self._dotwidget.set_xdotcode(xdotcode):
             self.setWindowTitle(os.path.basename(filename) + ' - Dot Viewer')
-            self.dotwidget.zoom_to_fit()
+            self._dotwidget.zoom_to_fit()
 
     def open_file(self, filename):
         try:
@@ -1274,7 +1297,7 @@ class QDotWindow(QtGui.QWidget):
             sys.exit()
 
     def set_filter(self, filter):
-        self.dotwidget.set_filter(filter)
+        self._dotwidget.set_filter(filter)
 
 
 def debug_trace():
@@ -1299,7 +1322,7 @@ def main():
     import optparse
 
     if not has_graphviz():
-        print "qdot.py depends on Graphviz. Please install it on your system. More information on Graphviz (http://www.graphviz.org/)"
+        print 'qdot.py depends on Graphviz. Please install it on your system. More information on Graphviz (http://www.graphviz.org/)'
         sys.exit(-1)
 
     parser = optparse.OptionParser(
